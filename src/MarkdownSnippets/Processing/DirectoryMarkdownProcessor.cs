@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using MAB.DotIgnore;
 
 namespace MarkdownSnippets
 {
@@ -93,31 +92,9 @@ namespace MarkdownSnippets
             bool validateContent = false,
             string? newLine = null)
         {
-            var gitIgnorePath = Path.Combine(targetDirectory, ".gitignore");
+            var cachedDirectoryInclude = new CachedDirectoryInclude(directoryInclude, targetDirectory);
+                this.directoryInclude = path => cachedDirectoryInclude.Include(path);
 
-            if (directoryInclude == null)
-            {
-                if (File.Exists(gitIgnorePath))
-                {
-                    var ignores = new IgnoreList(gitIgnorePath);
-                    this.directoryInclude = path =>
-                    {
-                        if (DirectoryExclusions.ShouldExcludeDirectory(path))
-                        {
-                            return false;
-                        }
-                        return !ignores.IsIgnored(path, true);
-                    };
-                }
-                else
-                {
-                    this.directoryInclude = path => !DirectoryExclusions.ShouldExcludeDirectory(path);
-                }
-            }
-            else
-            {
-                this.directoryInclude = directoryInclude;
-            }
             this.appendSnippets = appendSnippets;
             this.convention = convention;
             this.writeHeader = writeHeader.GetValueOrDefault(convention == DocumentConvention.SourceTransform);
@@ -184,6 +161,7 @@ namespace MarkdownSnippets
 
         public void AddSnippets(List<Snippet> snippets)
         {
+            var stopwatch = Stopwatch.StartNew();
             Guard.AgainstNull(snippets, nameof(snippets));
             var files = snippets
                 .Where(x => x.Path != null)
@@ -193,7 +171,7 @@ namespace MarkdownSnippets
             snippetSourceFiles.AddRange(files);
             log($"Added {files.Count} files for snippets");
             this.snippets.AddRange(snippets);
-            log($"Added {snippets.Count} snippets");
+            log($"Added {snippets.Count} snippets ({stopwatch.ElapsedMilliseconds}ms)");
         }
 
         public void AddSnippets(params Snippet[] snippets)
@@ -204,18 +182,24 @@ namespace MarkdownSnippets
 
         public void AddSnippetsFrom(string directory)
         {
+            var stopwatch = Stopwatch.StartNew();
             directory = ExpandDirectory(directory);
             SnippetFileFinder finder = new(directoryInclude);
             var files = finder.FindFiles(directory);
+            log($"Found {files.Count} files for snippets ({stopwatch.ElapsedMilliseconds}ms)");
             snippetSourceFiles.AddRange(files);
-            log($"Searching {files.Count} files for snippets");
+            stopwatch.Restart();
             var read = FileSnippetExtractor.Read(files, maxWidth, newLine).ToList();
             snippets.AddRange(read);
-            log($"Added {read.Count} snippets");
+            log($"Added {read.Count} snippets ({stopwatch.ElapsedMilliseconds}ms)");
         }
 
         string ExpandDirectory(string directory)
         {
+            if (directory == targetDirectory)
+            {
+                return targetDirectory;
+            }
             Guard.AgainstNull(directory, nameof(directory));
             directory = Path.Combine(targetDirectory, directory);
             directory = Path.GetFullPath(directory);
@@ -225,20 +209,22 @@ namespace MarkdownSnippets
 
         public void AddMdFilesFrom(string directory)
         {
+            var stopwatch = Stopwatch.StartNew();
             directory = ExpandDirectory(directory);
             MdFileFinder finder = new(convention, directoryInclude, documentExtensions);
             var files = finder.FindFiles(directory).ToList();
             mdFiles.AddRange(files);
-            log($"Added {files.Count} markdown files");
+            log($"Added {files.Count} markdown files ({stopwatch.ElapsedMilliseconds}ms)");
         }
 
         public void AddIncludeFilesFrom(string directory)
         {
+            var stopwatch = Stopwatch.StartNew();
             directory = ExpandDirectory(directory);
             IncludeFinder finder = new(directoryInclude);
             var toAdd = finder.ReadIncludes(directory).ToList();
             includes.AddRange(toAdd);
-            log($"Added {toAdd.Count} .include files");
+            log($"Added {toAdd.Count} .include files ({stopwatch.ElapsedMilliseconds}ms)");
         }
 
         public void AddMdFiles(params string[] files)

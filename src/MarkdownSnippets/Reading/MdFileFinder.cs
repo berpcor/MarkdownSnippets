@@ -50,6 +50,10 @@ namespace MarkdownSnippets
 
         void FindFiles(string directoryPath, List<string> files)
         {
+            if (!directoryInclude(directoryPath))
+            {
+                return;
+            }
             foreach (var extension in documentExtensions)
             {
                 IEnumerable<string> findFiles;
@@ -66,8 +70,7 @@ namespace MarkdownSnippets
                 files.AddRange(findFiles);
             }
 
-            foreach (var subDirectory in Directory.EnumerateDirectories(directoryPath)
-                .Where(_ => directoryInclude(_)))
+            foreach (var subDirectory in Directory.EnumerateDirectories(directoryPath))
             {
                 FindFiles(subDirectory, files);
             }

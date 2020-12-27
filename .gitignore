@@ -50,3 +50,4 @@ src/Tests/DirectoryMarkdownProcessor/UrlSnippetMissing/one.md
 src/Tests/DirectoryMarkdownProcessor/UrlSnippet/one.md
 src/Tests/DirectoryMarkdownProcessor/UrlIncludeMissing/one.md
 src/Tests/DirectoryMarkdownProcessor/UrlInclude/one.md
+src/MarkdownSnippets.Tool/Properties/launchSettings.json
