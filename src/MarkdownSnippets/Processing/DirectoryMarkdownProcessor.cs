@@ -29,7 +29,6 @@ namespace MarkdownSnippets
         AppendSnippetsToMarkdown appendSnippets;
         bool treatMissingAsWarning;
         string newLine;
-        Func<string,bool> directoryIgnoredBySourceControl;
 
         public DirectoryMarkdownProcessor(
             string targetDirectory,
@@ -95,21 +94,29 @@ namespace MarkdownSnippets
             string? newLine = null)
         {
             var gitIgnorePath = Path.Combine(targetDirectory, ".gitignore");
-            if (File.Exists(gitIgnorePath))
+
+            if (directoryInclude == null)
             {
-                var ignores = new IgnoreList(gitIgnorePath);
-                directoryIgnoredBySourceControl = path =>
+                if (File.Exists(gitIgnorePath))
                 {
-                    if (DirectoryExclusions.ShouldExcludeDirectory(path))
+                    var ignores = new IgnoreList(gitIgnorePath);
+                    this.directoryInclude = path =>
                     {
-                        return true;
-                    }
-                    return ignores.IsIgnored(path, true);
-                };
+                        if (DirectoryExclusions.ShouldExcludeDirectory(path))
+                        {
+                            return false;
+                        }
+                        return !ignores.IsIgnored(path, true);
+                    };
+                }
+                else
+                {
+                    this.directoryInclude = path => !DirectoryExclusions.ShouldExcludeDirectory(path);
+                }
             }
             else
             {
-                directoryIgnoredBySourceControl = DirectoryExclusions.ShouldExcludeDirectory;
+                this.directoryInclude = directoryInclude;
             }
             this.appendSnippets = appendSnippets;
             this.convention = convention;
@@ -117,7 +124,6 @@ namespace MarkdownSnippets
             this.readOnly = readOnly.GetValueOrDefault(false);
             this.validateContent = validateContent;
             this.header = header;
-            this.directoryInclude = directoryInclude;
             this.tocLevel = tocLevel;
             this.tocExcludes = tocExcludes;
             this.documentExtensions = MdFileFinder.BuildDefaultExtensions(documentExtensions);
