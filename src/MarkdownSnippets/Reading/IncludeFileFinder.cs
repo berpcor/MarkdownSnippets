@@ -14,14 +14,7 @@ class IncludeFileFinder
 
     bool IncludeDirectory(string directoryPath)
     {
-        Guard.DirectoryExists(directoryPath, nameof(directoryPath));
-        var suffix = Path.GetFileName(directoryPath);
-        if (suffix.StartsWith("."))
-        {
-            return false;
-        }
-
-        if (DirectoryExclusions.ShouldExcludeDirectory(suffix))
+        if (DirectoryExclusions.ShouldExcludeDirectory(directoryPath))
         {
             return false;
         }
