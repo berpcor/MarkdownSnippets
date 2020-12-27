@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using MAB.DotIgnore;
 
 namespace MarkdownSnippets
 {
@@ -28,6 +29,8 @@ namespace MarkdownSnippets
         AppendSnippetsToMarkdown appendSnippets;
         bool treatMissingAsWarning;
         string newLine;
+        Func<string,bool> fieIgnoredBySourceControl;
+        Func<string,bool> directoryIgnoredBySourceControl;
 
         public DirectoryMarkdownProcessor(
             string targetDirectory,
@@ -92,6 +95,25 @@ namespace MarkdownSnippets
             bool validateContent = false,
             string? newLine = null)
         {
+            var gitIgnorePath = Path.Combine(targetDirectory, ".gitignore");
+            if (File.Exists(gitIgnorePath))
+            {
+                var ignores = new IgnoreList(gitIgnorePath);
+                fieIgnoredBySourceControl = path => ignores.IsIgnored(path, false);
+                directoryIgnoredBySourceControl = path =>
+                {
+                    if (DirectoryExclusions.ShouldExcludeDirectory(path))
+                    {
+                        return true;
+                    }
+                    return ignores.IsIgnored(path, true);
+                };
+            }
+            else
+            {
+                fieIgnoredBySourceControl = _ => false;
+                directoryIgnoredBySourceControl = DirectoryExclusions.ShouldExcludeDirectory;
+            }
             this.appendSnippets = appendSnippets;
             this.convention = convention;
             this.writeHeader = writeHeader.GetValueOrDefault(convention == DocumentConvention.SourceTransform);
