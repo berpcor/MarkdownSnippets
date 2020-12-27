@@ -25,7 +25,7 @@ class IncludeFileFinder
         {
             return false;
         }
-        
+
         return directoryInclude(directoryPath);
     }
 

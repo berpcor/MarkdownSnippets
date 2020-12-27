@@ -38,12 +38,6 @@ namespace MarkdownSnippets
         public bool IncludeDirectory(string directoryPath)
         {
             Guard.DirectoryExists(directoryPath, nameof(directoryPath));
-            var suffix = Path.GetFileName(directoryPath);
-            if (suffix.StartsWith("."))
-            {
-                return false;
-            }
-
             return directoryInclude(directoryPath);
         }
 
@@ -79,7 +73,7 @@ namespace MarkdownSnippets
             }
 
             foreach (var subDirectory in Directory.EnumerateDirectories(directoryPath)
-                .Where(IncludeDirectory))
+                .Where(_ => directoryInclude(_)))
             {
                 FindFiles(subDirectory, files);
             }
