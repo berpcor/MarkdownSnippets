@@ -5,9 +5,9 @@ using MarkdownSnippets;
 
 class IncludeFileFinder
 {
-    DirectoryInclude? directoryInclude;
+    DirectoryInclude directoryInclude;
 
-    public IncludeFileFinder(DirectoryInclude? directoryInclude = null)
+    public IncludeFileFinder(DirectoryInclude directoryInclude)
     {
         this.directoryInclude = directoryInclude;
     }
@@ -25,12 +25,7 @@ class IncludeFileFinder
         {
             return false;
         }
-
-        if (directoryInclude == null)
-        {
-            return true;
-        }
-
+        
         return directoryInclude(directoryPath);
     }
 

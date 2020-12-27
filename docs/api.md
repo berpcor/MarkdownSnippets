@@ -54,7 +54,7 @@ DirectorySnippetExtractor snippetExtractor = new(_ => true);
 var snippets = snippetExtractor.ReadSnippets(directory);
 
 // extract includes from files
-IncludeFinder includeFinder = new();
+IncludeFinder includeFinder = new(_ => true);
 var includes = includeFinder.ReadIncludes(directory);
 
 // Merge with some markdown text
