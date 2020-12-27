@@ -35,12 +35,6 @@ namespace MarkdownSnippets
             this.documentExtensions = BuildDefaultExtensions(documentExtensions);
         }
 
-        public bool IncludeDirectory(string directoryPath)
-        {
-            Guard.DirectoryExists(directoryPath, nameof(directoryPath));
-            return directoryInclude(directoryPath);
-        }
-
         public List<string> FindFiles(params string[] directoryPaths)
         {
             Guard.AgainstNull(directoryPaths, nameof(directoryPaths));

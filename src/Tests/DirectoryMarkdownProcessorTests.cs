@@ -25,7 +25,8 @@ public class DirectoryMarkdownProcessorTests
             },
             directoryInclude: path =>
                 !path.Contains("IncludeFileFinder") &&
-                !path.Contains("DirectoryMarkdownProcessor"));
+                !path.Contains("DirectoryMarkdownProcessor") &&
+                !DirectoryExclusions.ShouldExcludeDirectory(path));
         processor.Run();
     }
 
