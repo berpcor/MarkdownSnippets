@@ -58,7 +58,7 @@ class Usage
         var directory = @"C:\path";
 
         // extract snippets from files
-        DirectorySnippetExtractor snippetExtractor = new();
+        DirectorySnippetExtractor snippetExtractor = new(_ => true);
         var snippets = snippetExtractor.ReadSnippets(directory);
 
         // extract includes from files

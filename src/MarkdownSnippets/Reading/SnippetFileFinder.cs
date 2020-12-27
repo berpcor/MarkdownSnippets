@@ -6,9 +6,9 @@ namespace MarkdownSnippets
 {
     public class SnippetFileFinder
     {
-        DirectoryInclude? directoryInclude;
+        DirectoryInclude directoryInclude;
 
-        public SnippetFileFinder(DirectoryInclude? directoryInclude = null)
+        public SnippetFileFinder(DirectoryInclude directoryInclude)
         {
             this.directoryInclude = directoryInclude;
         }
@@ -25,11 +25,6 @@ namespace MarkdownSnippets
             if (DirectoryExclusions.ShouldExcludeDirectory(suffix))
             {
                 return false;
-            }
-
-            if (directoryInclude == null)
-            {
-                return true;
             }
 
             return directoryInclude(directoryPath);

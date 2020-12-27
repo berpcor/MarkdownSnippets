@@ -13,7 +13,7 @@ namespace MarkdownSnippets
         bool writeHeader;
         bool validateContent;
         string? header;
-        DirectoryInclude? directoryInclude;
+        DirectoryInclude directoryInclude;
         bool readOnly;
         int tocLevel;
         int maxWidth;
