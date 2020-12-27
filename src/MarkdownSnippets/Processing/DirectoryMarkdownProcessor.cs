@@ -29,7 +29,6 @@ namespace MarkdownSnippets
         AppendSnippetsToMarkdown appendSnippets;
         bool treatMissingAsWarning;
         string newLine;
-        Func<string,bool> fieIgnoredBySourceControl;
         Func<string,bool> directoryIgnoredBySourceControl;
 
         public DirectoryMarkdownProcessor(
@@ -99,7 +98,6 @@ namespace MarkdownSnippets
             if (File.Exists(gitIgnorePath))
             {
                 var ignores = new IgnoreList(gitIgnorePath);
-                fieIgnoredBySourceControl = path => ignores.IsIgnored(path, false);
                 directoryIgnoredBySourceControl = path =>
                 {
                     if (DirectoryExclusions.ShouldExcludeDirectory(path))
@@ -111,7 +109,6 @@ namespace MarkdownSnippets
             }
             else
             {
-                fieIgnoredBySourceControl = _ => false;
                 directoryIgnoredBySourceControl = DirectoryExclusions.ShouldExcludeDirectory;
             }
             this.appendSnippets = appendSnippets;
