@@ -23,7 +23,7 @@ public class DirectoryMarkdownProcessorTests
                 "Credits",
                 "Release Notes"
             },
-            directoryFilter: path =>
+            directoryInclude: path =>
                 !path.Contains("IncludeFileFinder") &&
                 !path.Contains("DirectoryMarkdownProcessor"));
         processor.Run();

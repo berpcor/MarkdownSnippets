@@ -44,8 +44,8 @@ class Usage
         // extract snippets from files
         DirectorySnippetExtractor snippetExtractor = new(
             // all directories except bin and obj
-            directoryFilter: dirPath => !dirPath.EndsWith("bin") &&
-                                        !dirPath.EndsWith("obj"));
+            directoryInclude: dirPath => !dirPath.EndsWith("bin") &&
+                                         !dirPath.EndsWith("obj"));
         var snippets = snippetExtractor.ReadSnippets(@"C:\path");
 
         #endregion

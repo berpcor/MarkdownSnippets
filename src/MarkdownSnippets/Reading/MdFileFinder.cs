@@ -7,7 +7,7 @@ namespace MarkdownSnippets
     public class MdFileFinder
     {
         DocumentConvention convention;
-        DirectoryFilter? directoryFilter;
+        DirectoryInclude? directoryInclude;
         List<string> documentExtensions;
 
         static List<string> defaultExtensions = new() {"md"};
@@ -28,10 +28,10 @@ namespace MarkdownSnippets
             return defaultExtensions;
         }
 
-        public MdFileFinder(DocumentConvention convention, DirectoryFilter? directoryFilter = null, IEnumerable<string>? documentExtensions = null)
+        public MdFileFinder(DocumentConvention convention, DirectoryInclude? directoryInclude = null, IEnumerable<string>? documentExtensions = null)
         {
             this.convention = convention;
-            this.directoryFilter = directoryFilter;
+            this.directoryInclude = directoryInclude;
             this.documentExtensions = BuildDefaultExtensions(documentExtensions);
         }
 
@@ -49,12 +49,12 @@ namespace MarkdownSnippets
                 return false;
             }
 
-            if (directoryFilter == null)
+            if (directoryInclude == null)
             {
                 return true;
             }
 
-            return directoryFilter(directoryPath);
+            return directoryInclude(directoryPath);
         }
 
         public List<string> FindFiles(params string[] directoryPaths)
